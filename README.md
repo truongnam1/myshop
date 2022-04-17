@@ -1,4 +1,4 @@
-:star: Star us on [GitHub](https://github.com/aimeos/aimeos/stargazers) — it motivates us a lot! 😀
+câu lệnh **composer run-script --timeout=0 test**
 
 ![Aimeos GitHub stats](https://github-readme-stats.vercel.app/api?username=aimeos&count_private=true&include_all_commits=true&show_icons=true&bg_color=90,103050,109095&title_color=fff&text_color=fff&icon_color=fff&hide=prs)
 
