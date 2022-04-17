@@ -1,11 +1,19 @@
-câu lệnh **composer run-script --timeout=0 test**
+nâng cấp composer lên bản 2.1x
 
-![Aimeos GitHub stats](https://github-readme-stats.vercel.app/api?username=aimeos&count_private=true&include_all_commits=true&show_icons=true&bg_color=90,103050,109095&title_color=fff&text_color=fff&icon_color=fff&hide=prs)
+update composer bằng câu lệnh dưới đây
+```
+composer self-update
+```
+--------------
+sau khi chạy composer installxong thì chạy lần lượt các lệnh dưới đây
+```
+composer run-script --timeout=0 post-root-package-install
+composer run-script --timeout=0 post-create-project-cmd
+composer run-script --timeout=0 post-update-cmd
+```
 
-<a href="https://aimeos.org/">
-    <img src="https://aimeos.org/fileadmin/template/icons/logo.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
-</a>
-
+phần bên dưới để cho nhiều chữ thôi
+----
 # Aimeos Laravel ecommerce platform
 
 [![Total Downloads](https://poser.pugx.org/aimeos/aimeos/d/total.svg)](https://packagist.org/packages/aimeos/aimeos)
