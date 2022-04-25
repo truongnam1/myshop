@@ -1,201 +1,108 @@
-nâng cấp composer lên bản 2.1x
+# MERN Ecommerce
 
-update composer bằng câu lệnh dưới đây
-```
-composer self-update
-```
---------------
-sau khi chạy composer installxong thì chạy lần lượt các lệnh dưới đây
-```
-composer run-script --timeout=0 post-root-package-install
-composer run-script --timeout=0 post-create-project-cmd
-composer run-script --timeout=0 post-update-cmd
-```
+## Description
 
-phần bên dưới để cho nhiều chữ thôi
-----
-# Aimeos Laravel ecommerce platform
+An ecommerce store built with MERN stack, and utilizes third party API's. This ecommerce store enable three main different flows or implementations:
 
-[![Total Downloads](https://poser.pugx.org/aimeos/aimeos/d/total.svg)](https://packagist.org/packages/aimeos/aimeos)
-[![License](https://poser.pugx.org/aimeos/aimeos/license.svg)](https://packagist.org/packages/aimeos/aimeos)
+1. Buyers browse the store categories, products and brands
+2. Sellers or Merchants manage their own brand component
+3. Admins manage and control the entire store components 
 
-[Aimeos](https://aimeos.org/Laravel) is THE professional, full-featured and
-high performance e-commerce platform! You can install it within 5 minutes
-and can adapt, extend, overwrite and customize anything to your needs.
 
-[![Aimeos Laravel demo](https://aimeos.org/fileadmin/aimeos.org/images/aimeos-github.png)](https://laravel.demo.aimeos.org)
+* features:
+  * Node provides the backend environment for this application
+  * Express middleware is used to handle requests, routes
+  * Mongoose schemas to model the application data
+  * React for displaying UI components
+  * Redux to manage application's state
+  * Redux Thunk middleware to handle asynchronous redux actions
 
-## Features
 
-Aimeos is a full-featured e-commerce package:
+## Demo
 
-* Multi vendor, multi channel and multi warehouse
-* From one to 1,000,000,000+ items
-* Extremly fast down to 20ms
-* For multi-tentant e-commerce SaaS solutions
-* Bundles, vouchers, virtual, configurable, custom and event products
-* Subscriptions with recurring payments
-* 100+ payment gateways
-* Full RTL support (frontend and backend)
-* Block/tier pricing out of the box
-* Extension for customer/group based prices
-* Discount and voucher support
-* Flexible basket rule system
-* Full-featured admin backend
-* Beautiful admin dashboard
-* Configurable product data sets
-* JSON REST API based on jsonapi.org
-* Completly modular structure
-* Extremely configurable and extensible
-* Extension for market places with millions of vendors
-* Fully SEO optimized including rich snippets
-* Translated to 30+ languages
-* AI-based text translation
-* Optimized for smart phones and tablets
-* Secure and reviewed implementation
-* High quality source code
+This application is deployed on Heroku. Please check it out :smile: [here](https://mern-store-80202.herokuapp.com/).
 
-... and [more Aimeos features](https://aimeos.org/features)
+See admin dashboard [demo](https://mernstore-bucket.s3.us-east-2.amazonaws.com/admin.mp4)
 
-Check out the demos:
+## Install
 
-* [Aimeos frontend demo](https://laravel.demo.aimeos.org)
-* [Aimeos admin demo](https://admin.demo.aimeos.org)
-
-## Package only
-
-Want to **integrate Aimeos** into your **existing application**?
-
-Use the [Aimeos Laravel package](https://github.com/aimeos/aimeos-laravel) directly!
-
-## Table of content
-
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Frontend](#frontend)
-- [Backend](#backend)
-- [Customize](#customize)
-- [Multi-vendor](#multi-vendor)
-- [License](#license)
-- [Links](#links)
-
-## Requirements
-
-The Aimeos shop distribution requires:
-- Linux/Unix, WAMP/XAMP or MacOS environment
-- PHP >= 7.3
-- MySQL >= 5.7.8, MariaDB >= 10.2.2
-- Web server (Apache, Nginx or integrated PHP web server for testing)
-
-If required PHP extensions are missing, `composer` will tell you about the missing
-dependencies.
-
-If you want to **upgrade between major versions**, please have a look into the
-[upgrade guide](https://aimeos.org/docs/latest/laravel/setup/#upgrade)!
-
-## Installation
-
-To install the Aimeos shop application, you need [composer 2.1+](https://getcomposer.org).
-On the CLI, execute this command for a complete installation including a working setup:
+Some basic Git commands are:
 
 ```
-wget https://getcomposer.org/download/latest-stable/composer.phar -O composer
-php composer create-project aimeos/aimeos myshop
+$ git clone https://github.com/mohamedsamara/mern-ecommerce.git
+$ cd project
+$ npm install
 ```
 
-You will be asked for the parameters of your database and mail server as well as an
-e-mail and password used for creating the administration account.
-
-In a local environment, you can use the integrated PHP web server to test your new Aimeos
-installation. Simply execute the following command to start the web server:
+## Setup
 
 ```
-cd myshop
-php artisan serve
+ Create .env file that include:
+
+  * MONGO_URI & JWT_SECRET
+  * PORT & BASE_SERVER_URL & BASE_API_URL & BASE_CLIENT_URL
+  * MAILCHIMP_KEY & MAILCHIMP_LIST_KEY => Mailchimp configuration
+  * MAILGUN_KEY & MAILGUN_DOMAIN & MAILGUN_EMAIL_SENDER => Mailgun configuration
+  * GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET & GOOGLE_CALLBACK_URL => Google Auth configuration
+  * FACEBOOK_CLIENT_ID & FACEBOOK_CLIENT_SECRET & FACEBOOK_CALLBACK_URL => Facebook Auth configuration
+  * AWS_ACCESS_KEY_ID & AWS_SECRET_ACCESS_KEY & AWS_REGION & AWS_BUCKET_NAME => AWS configuration
 ```
 
-**Note:** In an hosting environment, the document root of your virtual host must point to
-the **/.../myshop/public/** directory and you have to change the `APP_URL` setting in your `.env`
-file to your domain without port, e.g.:
+## Heroku Deployment
 
 ```
-APP_URL=http://myhostingdomain.com
+> Create a Procfile in the root directory of your application with the following command **web: npm run start:production**
 ```
 
-## Frontend
 
-After the installation, you can test the Aimeos shop frontend by calling the URL of your
-VHost in your browser. If you use the integrated PHP web server, you should browse
-this URL: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-[![Aimeos frontend](https://aimeos.org/fileadmin/aimeos.org/images/aimeos-frontend.jpg?2021.07)](http://laravel.demo.aimeos.org/)
-
-## Backend
-
-The Aimeos administration interface will be available at `/admin` in your VHost. When using
-the integrated PHP web server, call this URL: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
-
-[![Aimeos admin backend](https://aimeos.org/fileadmin/aimeos.org/images/aimeos-backend.png?2021.04)](http://admin.demo.aimeos.org/)
-
-## Customize
-
-Laravel and the Aimeos e-commerce package are extremely flexible and highly customizable.
-A lot of documentation for the [Laravel framework](https://laravel.com) and the
-[Aimeos e-commerce framework](https://aimeos.org/docs/latest/laravel) exists. If you have questions
-about Aimeos, don't hesitate to ask in our [Aimeos forum](https://aimeos.org/help/).
-
-For more details about Aimeos Laravel integration, please have a look at its
-[repository](https://github.com/aimeos/aimeos-laravel).
-
-## Multi-language
-
-For shops which offers multiple languages, just add this line to your `./myshop/.env` file:
+## Simple build for production
 
 ```
-SHOP_MULTILOCALE=true
+$ npm run production
 ```
 
-Then, the language will be added to the routes automatically. You can set up the available
-languages in the ["Locale > Locale" panel](https://aimeos.org/docs/latest/manual/locales/)
-of the Aimeos admin backend.
-
-## Multi-vendor
-
-To enable multi-vendor features, add this settings to the `./myshop/.env` file:
+## Run the application for development
 
 ```
-SHOP_MULTISHOP=true
+$ npm start
 ```
 
-If you want to allow vendors to register themselves as sellers, set this option in the
-`./myshop/.env` file too:
+## Run the application for production
 
 ```
-SHOP_REGISTRATION=true
+$ npm run start:production
 ```
 
-By default, newly registered sellers have administrator privileges in the backend for
-their own site. For a more limited access to the backend, you can change the permission
-level to "editor" in the `./myshop/.env` file:
+## Languages & tools
+
+- [Node](https://nodejs.org/en/)
+
+- [Express](https://expressjs.com/)
+
+- [Mongoose](https://mongoosejs.com/)
+
+- [React](https://reactjs.org/)
+
+- [Webpack](https://webpack.js.org/)
+
+
+### Code Formatter
+
+- Add a `.vscode` directory
+- Create a file `settings.json` inside `.vscode`
+- Install Prettier - Code formatter in VSCode
+- Add the following snippet:  
+
+```json
+
+    {
+      "editor.formatOnSave": true,
+      "prettier.singleQuote": true,
+      "prettier.arrowParens": "avoid",
+      "prettier.jsxSingleQuote": true,
+      "prettier.trailingComma": "none",
+      "javascript.preferences.quoteStyle": "single",
+    }
 
 ```
-SHOP_PERMISSION=editor
-```
 
-You can change the permissions associated to "admin" or "editor" by adding your own version
-of the [JQAdm resource configuration](https://github.com/aimeos/ai-admin-jqadm/blob/master/config/admin/jqadm/resource.php)
-to the "admin" section of your `./config/shop.php` file.
-
-## License
-
-The Aimeos shop system is licensed under the terms of the MIT and LGPLv3 license and
-is available for free.
-
-## Links
-
-* [Web site](https://aimeos.org/Laravel)
-* [Documentation](https://aimeos.org/docs/latest/laravel)
-* [Forum](https://aimeos.org/help/laravel-package-f18/)
-* [Issue tracker](https://github.com/aimeos/aimeos/issues)
-* [Composer packages](https://packagist.org/packages/aimeos/aimeos)
-* [Source code](https://github.com/aimeos/aimeos)
