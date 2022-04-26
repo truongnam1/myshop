@@ -30,6 +30,9 @@ const ProductSchema = new Schema({
   imageKey: {
     type: String
   },
+  file3dUrl: {
+    type: String
+  },
   description: {
     type: String,
     trim: true

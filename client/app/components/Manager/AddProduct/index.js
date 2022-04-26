@@ -26,7 +26,8 @@ const AddProduct = props => {
     productChange,
     addProduct,
     brands,
-    image
+    image,
+    file3d
   } = props;
 
   const handleSubmit = event => {
@@ -143,6 +144,19 @@ const AddProduct = props => {
               label={'file'}
               placeholder={'Please Upload Image'}
               value={image}
+              onInputChange={(name, value) => {
+                productChange(name, value);
+              }}
+            />
+          </Col>
+          <Col xs='12' md='12'>
+            <Input
+              type={'file'}
+              error={formErrors['file']}
+              name={'file3d'}
+              label={'file3d'}
+              placeholder={'Please Upload file 3d'}
+              value={file3d}
               onInputChange={(name, value) => {
                 productChange(name, value);
               }}
