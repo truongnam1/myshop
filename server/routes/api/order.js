@@ -9,6 +9,8 @@ const Product = require('../../models/product');
 const auth = require('../../middleware/auth');
 const role = require('../../middleware/role');
 const mailgun = require('../../services/mailgun');
+const mailtrap = require('../../services/mailtrap');
+
 const store = require('../../helpers/store');
 
 router.post('/add', auth, async (req, res) => {
@@ -40,7 +42,7 @@ router.post('/add', auth, async (req, res) => {
       products: cartDoc.products
     };
 
-    await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    await mailtrap.sendEmail(order.user.email, 'order-confirmation', newOrder);
 
     res.status(200).json({
       success: true,
