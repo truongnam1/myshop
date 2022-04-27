@@ -4,6 +4,8 @@
 # production
 /build
 /dist
+/public/uploads/3d
+/public/uploads/images
   
 # misc
 package.json.bak
