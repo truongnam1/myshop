@@ -11,6 +11,14 @@ const OrderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
+  shop: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  isSuccess: {
+    type: Boolean,
+    default: false,
+  },
   total: {
     type: Number,
     default: 0

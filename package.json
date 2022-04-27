@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/mohamedsamara/mern-ecommerce#readme",
   "dependencies": {
+    "@react-three/drei": "^9.5.3",
     "autosuggest-highlight": "^3.1.1",
     "aws-sdk": "^2.799.0",
     "axios": "^0.21.1",
@@ -72,12 +73,14 @@
     "react-router-dom": "^5.0.1",
     "react-select": "^3.0.4",
     "react-share": "^4.4.0",
+    "react-three-fiber": "^6.0.13",
     "reactstrap": "^8.0.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "simple-line-icons": "^2.4.1",
     "socket.io": "^4.2.0",
     "socket.io-client": "^4.2.0",
+    "three": "^0.139.2",
     "validatorjs": "^3.18.1"
   },
   "devDependencies": {

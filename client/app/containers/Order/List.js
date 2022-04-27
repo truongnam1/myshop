@@ -47,15 +47,15 @@ class List extends React.PureComponent {
 
     const filteredOrders = search
       ? orders.filter(o => o._id.includes(search))
-      : orders;
+      : (orders.filter(o => o.userId === user._id));
 
     return (
       <div className='order-dashboard'>
         <SubPage
           title='Your Orders'
-          actionTitle={user.role === 'ROLE_ADMIN' && 'Customer Orders'}
+          actionTitle={(user.role === 'ROLE_ADMIN' || user.role === 'ROLE_MERCHANT') && 'Customer Orders'}
           handleAction={() =>
-            user.role === 'ROLE_ADMIN' &&
+            (user.role === 'ROLE_ADMIN' || user.role === 'ROLE_MERCHANT') &&
             history.push('/dashboard/orders/customers')
           }
         >

@@ -17,6 +17,8 @@ import NotFound from '../../components/Common/NotFound';
 import LoadingIndicator from '../../components/Common/LoadingIndicator';
 
 class Customer extends React.PureComponent {
+
+
   componentDidMount() {
     this.props.fetchOrders();
   }
@@ -30,7 +32,7 @@ class Customer extends React.PureComponent {
           title='Customer Orders'
           actionTitle='My Orders'
           handleAction={() =>
-            user.role === 'ROLE_ADMIN' && history.push('/dashboard/orders')
+            (user.role === 'ROLE_ADMIN' || user.role === 'ROLE_MERCHANT') && history.push('/dashboard/orders')
           }
         >
           <OrderSearch onSearchSubmit={searchOrders} />
@@ -50,7 +52,8 @@ class Customer extends React.PureComponent {
 const mapStateToProps = state => {
   return {
     user: state.account.user,
-    orders: state.order.searchedOrders,
+    // orders: state.order.searchedOrders,
+    orders: state.order.orders,
     isLoading: state.order.isLoading,
     isOrderAddOpen: state.order.isOrderAddOpen
   };

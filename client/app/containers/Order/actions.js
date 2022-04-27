@@ -47,6 +47,8 @@ export const fetchOrders = () => {
           type: FETCH_ORDERS,
           payload: response.data.orders
         });
+
+        return response.data.orders;
       }
     } catch (error) {
       dispatch(clearOrders());
@@ -159,12 +161,29 @@ export const addOrder = () => {
   return async (dispatch, getState) => {
     try {
       const cartId = localStorage.getItem('cart_id');
-      const total = getState().cart.cartTotal;
+
+      const cartItems = getState().cart.cartItems;
+
+      const shops = cartItems.map(product => product.own);
+
+      const totals = cartItems.reduce((obj, product) => {
+        if(shops.indexOf(product.own) !== -1) {
+          
+          obj[product.own] = Number(obj[product.own] || 0) + Number(product.totalPrice);
+          
+          return obj;
+        }
+
+        return obj;
+
+      }, {})
+
 
       if (cartId) {
         const response = await axios.post(`/api/order/add`, {
           cartId,
-          total
+          totals,
+          shops: [...new Set(shops)],
         });
 
         dispatch(push(`/order/success/${response.data.order._id}`));

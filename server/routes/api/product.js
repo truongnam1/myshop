@@ -26,9 +26,11 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     console.log('filexxx', file);
 
+    const fileName = path.extname(file.originalname) === '.obj' ? '3d' + '-' + Date.now() + path.extname(file.originalname) : file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+
     cb(
       null,
-      file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+      fileName
     );
   }
 });
@@ -132,7 +134,7 @@ router.post('/list', async (req, res) => {
       },
       {
         $match: {
-          'brand.isActive': true
+          'brand.isivActe': true
         }
       },
       {
@@ -417,6 +419,7 @@ router.post(
       const isActive = req.body.isActive;
       const brand = req.body.brand;
       const image = req.file;
+      const own = req.body.own;
 
       if (!sku) {
         return res.status(400).json({ error: 'You must enter sku.' });
@@ -479,7 +482,8 @@ router.post(
         isActive,
         brand,
         imageUrl,
-        imageKey
+        imageKey,
+        own,
       });
 
       const savedProduct = await product.save();

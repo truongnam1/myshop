@@ -53,6 +53,11 @@ const ProductSchema = new Schema({
     ref: 'Brand',
     default: null
   },
+  own: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   updated: Date,
   created: {
     type: Date,
