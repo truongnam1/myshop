@@ -4,7 +4,7 @@ class MailtrapService {
     init() {
         const email = new Email({
             message: {
-                from: 'admin-tmdt@mail.com'
+                from: process.env.MAILTRAP_MAIL_ADMIN
             },
             send: true,
             transport: {
@@ -25,20 +25,6 @@ class MailtrapService {
 
 const mailtrap = new MailtrapService().init();
 exports.sendEmail = async(email, type, host, data) => {
-    // try {
-    //     const message = prepareTemplate(type, host, data);
-
-    //     const config = {
-    //         from: `MERN Store! <${sender}>`,
-    //         to: email,
-    //         subject: message.subject,
-    //         text: message.text
-    //     };
-
-    //     return await mailgun.messages().send(config);
-    // } catch (error) {
-    //     return error;
-    // }
 
     const message = prepareTemplate(type, host, data);
 

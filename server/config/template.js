@@ -5,7 +5,7 @@ exports.resetEmail = (host, resetToken) => {
         'Bạn nhận được thông báo này vì bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình.\n\n' +
         'Vui lòng nhấp vào liên kết sau hoặc dán liên kết này vào trình duyệt của bạn để hoàn tất quá trình:\n\n' +
         'http://'
-      }${host}/reset-password/${resetToken}\n\n` +
+      }<a href="${host}/reset-password/${resetToken}">${host}/reset-password/${resetToken}</a> \n\n` +
             `Nếu bạn không yêu cầu, vui lòng bỏ qua email này và mật khẩu của bạn sẽ không thay đổi.\n`
     };
 
@@ -29,7 +29,7 @@ exports.merchantSignup = (host, { resetToken, email }) => {
       'Xin chúc mừng! Đơn của bạn đã được chấp nhận. Vui lòng hoàn tất đăng ký tài khoản Người bán của bạn bằng cách nhấp vào liên kết bên dưới. \n \n '+
       'Vui lòng nhấp vào liên kết sau hoặc dán liên kết này vào trình duyệt của bạn để hoàn tất quá trình:\n\n' +
       'http://'
-    }${host}/merchant-signup/${resetToken}?email=${email}\n\n`
+    } <a href="${host}/merchant-signup/${resetToken}?email=${email}">${host}/merchant-signup/${resetToken}?email=${email}</a> \n\n`
     };
 
     return message;
