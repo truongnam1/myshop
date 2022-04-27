@@ -21,15 +21,32 @@ var path = require('path');
 // SET STORAGE
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'public/uploads/images');
+    if (file.fieldname === 'file3d') {
+      cb(null, 'public/uploads/3d');
+    } else if (file.fieldname === 'image') {
+      cb(null, 'public/uploads/images');
+    }
+
+    // cb(null, 'public/uploads/images');
   },
   filename: function (req, file, cb) {
-    console.log('filexxx', file);
+    console.log('input', file);
 
-    cb(
-      null,
-      file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-    );
+    // cb(
+    //   null,
+    //   file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+    // );
+    if (file.fieldname === 'file3d') {
+      cb(
+        null,
+        file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+      );
+    } else if (file.fieldname === 'image') {
+      cb(
+        null,
+        file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+      );
+    }
   }
 });
 
@@ -405,7 +422,17 @@ router.post(
   '/add',
   auth,
   role.checkRole(role.ROLES.Admin, role.ROLES.Merchant),
-  upload.single('image'),
+  // upload.single('image'),
+  upload.fields([
+    {
+      name: 'image',
+      maxCount: 1
+    },
+    {
+      name: 'file3d',
+      maxCount: 1
+    }
+  ]),
   async (req, res) => {
     try {
       const sku = req.body.sku;
@@ -416,8 +443,13 @@ router.post(
       const taxable = req.body.taxable;
       const isActive = req.body.isActive;
       const brand = req.body.brand;
-      const image = req.file;
 
+      // const image = req.file;
+      const image = req.files.image[0];
+      const file3d = req.files.file3d[0];
+
+      console.log(`file3d`, file3d);
+      console.log(`image`, image);
       if (!sku) {
         return res.status(400).json({ error: 'You must enter sku.' });
       }
@@ -444,6 +476,7 @@ router.post(
 
       let imageUrl = '';
       let imageKey = '';
+      let file3dUrl = '';
 
       if (image) {
         // const s3bucket = new AWS.S3({
@@ -468,6 +501,9 @@ router.post(
         imageUrl = image.path.replace('public', '');
         imageKey = image.filename;
       }
+      if (file3d) {
+        file3dUrl = file3d.path.replace('public', '');
+      }
 
       const product = new Product({
         sku,
@@ -479,7 +515,8 @@ router.post(
         isActive,
         brand,
         imageUrl,
-        imageKey
+        imageKey,
+        file3dUrl
       });
 
       const savedProduct = await product.save();
