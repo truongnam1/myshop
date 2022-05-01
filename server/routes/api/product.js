@@ -149,7 +149,7 @@ router.post('/list', async (req, res) => {
       },
       {
         $match: {
-          'brand.isActive': true
+          'brand.isivActe': true
         }
       },
       {
@@ -443,6 +443,8 @@ router.post(
       const taxable = req.body.taxable;
       const isActive = req.body.isActive;
       const brand = req.body.brand;
+      // const image = req.file;
+      const own = req.body.own;
 
       // const image = req.file;
       const image = req.files.image[0];
@@ -516,7 +518,8 @@ router.post(
         brand,
         imageUrl,
         imageKey,
-        file3dUrl
+        file3dUrl,
+        own
       });
 
       const savedProduct = await product.save();

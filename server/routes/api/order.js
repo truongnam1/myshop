@@ -16,33 +16,22 @@ const store = require('../../helpers/store');
 router.post('/add', auth, async (req, res) => {
   try {
     const cart = req.body.cartId;
-    const total = req.body.total;
+    const totals = req.body.totals;
     const user = req.user._id;
+    const shops = req.body.shops;
 
-    const order = new Order({
-      cart,
-      user,
-      total
+    const orders = shops.map(shop => {
+      return { cart, user, total: totals[shop], shop };
     });
 
-    const orderDoc = await order.save();
-
-    const cartDoc = await Cart.findById(orderDoc.cart._id).populate({
-      path: 'products.product',
-      populate: {
-        path: 'brand'
-      }
-    });
-
-    const newOrder = {
-      _id: orderDoc._id,
-      created: orderDoc.created,
-      user: orderDoc.user,
-      total: orderDoc.total,
-      products: cartDoc.products
-    };
+    // const order = new Order({
+    //   cart,
+    //   user,
+    //   total
+    // });
 
     await mailtrap.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    const orderDoc = await Order.insertMany(orders);
 
     res.status(200).json({
       success: true,
@@ -131,7 +120,7 @@ router.get('/', auth, async (req, res) => {
   try {
     const user = req.user._id;
 
-    let ordersDoc = await Order.find({ user }).populate({
+    let ordersDoc = await Order.find({ shop: user }).populate({
       path: 'cart',
       populate: {
         path: 'products.product',
@@ -149,7 +138,8 @@ router.get('/', auth, async (req, res) => {
           _id: o._id,
           total: parseFloat(Number(o.total.toFixed(2))),
           created: o.created,
-          products: o.cart?.products
+          products: o.cart?.products,
+          userId: o.user
         };
       });
 
@@ -177,7 +167,10 @@ router.get('/:orderId', auth, async (req, res) => {
 
     let orderDoc = null;
 
-    if (req.user.role === role.ROLES.Admin) {
+    if (
+      req.user.role === role.ROLES.Admin ||
+      req.user.role === role.ROLES.Merchant
+    ) {
       orderDoc = await Order.findOne({ _id: orderId }).populate({
         path: 'cart',
         populate: {

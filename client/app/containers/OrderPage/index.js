@@ -27,6 +27,7 @@ class OrderPage extends React.PureComponent {
     }
   }
 
+
   render() {
     const {
       history,
@@ -36,6 +37,8 @@ class OrderPage extends React.PureComponent {
       cancelOrder,
       updateOrderItemStatus
     } = this.props;
+
+    console.log('orders', order);
 
     return (
       <div className='order-page'>

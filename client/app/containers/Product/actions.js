@@ -243,21 +243,26 @@ export const addProduct = () => {
 
             const brand = unformatSelectOptions([product.brand]);
 
-            const newProduct = {
-                sku: product.sku,
-                name: product.name,
-                description: product.description,
-                price: product.price,
-                quantity: product.quantity,
-                image: product.image,
-                file3d: product.file3d,
-                isActive: product.isActive,
-                taxable: product.taxable.value,
-                brand: user.role !== 'ROLE_MERCHANT' ?
-                    brand != 0 ?
-                    brand :
-                    null : brands[1].value
-            };
+      console.log('user', user._id);
+
+      const newProduct = {
+        sku: product.sku,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+        image: product.image,
+        file3d: product.file3d,
+        isActive: product.isActive,
+        taxable: product.taxable.value,
+        brand:
+          user.role !== 'ROLE_MERCHANT'
+            ? brand != 0
+              ? brand
+              : null
+            : brands[1].value,
+        own: user._id,
+      };
 
             const { isValid, errors } = allFieldsValidation(newProduct, rules, {
                 'required.sku': 'Sku is required.',
