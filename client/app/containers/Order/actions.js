@@ -35,12 +35,12 @@ export const setOrderLoading = value => {
   };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (params) => {
   return async (dispatch, getState) => {
     try {
       dispatch(setOrderLoading(true));
 
-      const response = await axios.get(`/api/order`);
+      const response = await axios.get(`/api/order`, {params});
 
       if (response.data.orders) {
         dispatch({

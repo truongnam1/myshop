@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Mongoose = require('mongoose');
-
+const moment = require('moment');
 // Bring in Models & Helpers
 const Order = require('../../models/order');
 const Cart = require('../../models/cart');
@@ -30,13 +30,13 @@ router.post('/add', auth, async (req, res) => {
     //   total
     // });
 
-    await mailtrap.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    
     const orderDoc = await Order.insertMany(orders);
-
+    mailtrap.sendEmail(req.user.email, 'order-confirmation', null, {_id: orderDoc[0]._doc._id, firstName: req.user.firstName});
     res.status(200).json({
       success: true,
       message: `Your order has been placed successfully!`,
-      order: { _id: orderDoc._id }
+      order: { _id: orderDoc[0]._doc._id }
     });
   } catch (error) {
     res.status(400).json({
@@ -120,15 +120,38 @@ router.get('/', auth, async (req, res) => {
   try {
     const user = req.user._id;
 
-    let ordersDoc = await Order.find({ shop: user }).populate({
-      path: 'cart',
-      populate: {
-        path: 'products.product',
+    const isUser = req.query.isUser;
+    const status = req.query.status;
+
+    let ordersDoc;
+    
+    if(!isUser) {
+      ordersDoc = await Order.find({ shop: user, isSuccess: status || false}).populate({
+        path: 'cart',
         populate: {
-          path: 'brand'
+          path: 'products.product',
+          populate: {
+            path: 'brand'
+          }
         }
-      }
-    });
+      });
+    } else {
+      ordersDoc = await Order.find({ user, isSuccess: status || false }).populate({
+        path: 'cart',
+        populate: {
+          path: 'products.product',
+          populate: {
+            path: 'brand'
+          }
+        }
+      });
+
+      ordersDoc = ordersDoc.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.cart._id === value.cart._id
+        ))
+      )
+    }
 
     ordersDoc = ordersDoc.filter(order => order.cart);
 
@@ -298,6 +321,47 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
     });
   }
 });
+
+router.get('/statistical/test', async (req, res) => {
+  
+
+  const orders = await Order.find().populate({
+    path: 'cart',
+    populate: {
+      path: 'products.product',
+    }
+  });
+
+  const findByMonth = orders.filter(order => moment(order._doc.created).month() === (new Date().getMonth()));
+
+  let result = {
+    totalOrder: findByMonth.length,
+    totalMoney: 0,
+    totalProductProcessing: 0,
+    totalProductShipped: 0,
+    totalProductNotProcessing: 0,
+    totalProductDelivered: 0,
+    totalProductCancelled: 0,
+  };
+
+  findByMonth.forEach(item => {
+    result.totalMoney = result.totalMoney + item._doc.total;
+
+    item._doc.cart.products.forEach(product => {
+      if(product.status === 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
+      
+      else if(product.status === 'Shipped') result.totalProductShipped = result.totalProductShipped + 1;
+
+      else if(product.status === 'Not processed') result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
+
+      else if(product.status === 'Delivered') result.totalProductDelivered = result.totalProductDelivered + 1;
+
+      else result.totalProductCancelled = result.totalProductCancelled + 1;
+    })
+  })
+
+  return res.json(result)
+})
 
 const increaseQuantity = products => {
   let bulkOptions = products.map(item => {
