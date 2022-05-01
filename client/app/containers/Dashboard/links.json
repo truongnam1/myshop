@@ -21,7 +21,8 @@
     { "to": "/product", "name": "Products" },
     { "to": "/orders", "name": "Orders" },
     { "to": "/wishlist", "name": "WishList" },
-    { "to": "/support", "name": "Support" }
+    { "to": "/support", "name": "Support" },
+    { "to": "/statistical", "name": "Statistical" }
   ],
   "ROLE_MEMBER": [
     { "to": "", "name": "Account Details" },

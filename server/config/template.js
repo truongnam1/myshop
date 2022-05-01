@@ -85,7 +85,7 @@ exports.merchantApplicationEmail = () => {
 exports.orderConfirmationEmail = order => {
     const message = {
         subject: `Xác nhận đơn hàng ${order._id}`,
-        text: `Hi ${order.user.profile.firstName}! Cảm ơn bạn đã đặt hàng!. \n\n` +
+        text: `Hi ${order.firstName}! Cảm ơn bạn đã đặt hàng!. \n\n` +
             `Chúng tôi đã nhận được đơn đặt hàng của bạn và sẽ liên hệ với bạn ngay sau khi gói hàng của bạn được chuyển đi. \n\n`
     };
 

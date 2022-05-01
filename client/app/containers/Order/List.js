@@ -26,7 +26,7 @@ class List extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.fetchOrders();
+    this.props.fetchOrders({isUser: true});
   }
 
   handleOrderSearch = e => {
