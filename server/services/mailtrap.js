@@ -6,7 +6,7 @@ class MailtrapService {
             message: {
                 from: process.env.MAILTRAP_MAIL_ADMIN
             },
-            send: true,
+            // send: true,
             transport: {
                 host: 'smtp.mailtrap.io',
                 port: 2525,

@@ -333,10 +333,12 @@ router.get('/statistical/test', async (req, res) => {
     }
   });
 
+
   let findByMonth = [];
-  if(status === 1) {
+  if(status == 1) {
     findByMonth = orders.filter(order => moment(order._doc.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD'));
-  } else if(status === 2) {
+    console.log(findByMonth);
+  } else if(status == 2) {
     findByMonth = orders.filter(order => moment(order._doc.created).month() === (new Date().getMonth()));
   } else {
     findByMonth = orders.filter(order => moment(order._doc.created).year() === (new Date().getFullYear()));
@@ -358,13 +360,13 @@ router.get('/statistical/test', async (req, res) => {
     result.totalMoney = result.totalMoney + item._doc.total;
 
     item._doc.cart.products.forEach(product => {
-      if(product.status === 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
+      if(product.status == 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
       
-      else if(product.status === 'Shipped') result.totalProductShipped = result.totalProductShipped + 1;
+      else if(product.status == 'Shipped') result.totalProductShipped = result.totalProductShipped + 1;
 
-      else if(product.status === 'Not processed') result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
+      else if(product.status == 'Not processed') result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
 
-      else if(product.status === 'Delivered') result.totalProductDelivered = result.totalProductDelivered + 1;
+      else if(product.status == 'Delivered') result.totalProductDelivered = result.totalProductDelivered + 1;
 
       else result.totalProductCancelled = result.totalProductCancelled + 1;
     })

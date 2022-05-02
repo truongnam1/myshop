@@ -30,13 +30,13 @@ class Statistical extends React.PureComponent {
     }
   }
   async componentDidMount() {
-    const result = await this.getListStatistical({status: 2});
-    
-    this.setState({statistical: result});
+    this.getListStatistical({status: 2});
   }
 
-  getListStatistical(params) {
-    return statistical(params)
+  async getListStatistical(params) {
+    const result = await statistical(params);
+
+    this.setState({statistical: result});
   }
 
   changeSelect(value) {
@@ -80,7 +80,7 @@ class Statistical extends React.PureComponent {
 
           <div className='col-xl-12'>
                 <h2>Tổng đơn hàng chưa được xử lí theo {this.state.select.label}</h2>
-                <p>{this.state.statistical.totalProductProcessing} đơn</p>
+                <p>{this.state.statistical.totalProductNotProcessing} đơn</p>
           </div>
 
           <div className='col-xl-12'>

@@ -88,7 +88,7 @@ const OrderItems = props => {
       <h2>Order Items</h2>
       <Row>
         {order.products.map((item, index) => {
-            if (item?.product?.own === user._id) 
+            // if (item?.product?.own === user._id) 
               return (
             
                 <Col xs='12' key={index} className='item'>
