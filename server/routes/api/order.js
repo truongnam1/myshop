@@ -228,7 +228,8 @@ router.get('/:orderId', auth, async (req, res) => {
       created: orderDoc.created,
       totalTax: 0,
       products: orderDoc?.cart?.products,
-      cartId: orderDoc.cart._id
+      cartId: orderDoc.cart._id,
+      user: orderDoc.user,
     };
 
     order = store.caculateTaxAmount(order);
@@ -282,6 +283,13 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
       }
     );
 
+
+      const cart = await Cart.findOne({ _id: cartId });
+      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
+
+      await Order.updateOne({_id: orderId}, {isSuccess: itemsSuccess.length === cart.products.length ? true : false});
+
+
     if (status === 'Cancelled') {
       await Product.updateOne(
         { _id: foundCartProduct.product },
@@ -290,6 +298,13 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
 
       const cart = await Cart.findOne({ _id: cartId });
       const items = cart.products.filter(item => item.status === 'Cancelled');
+      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
+
+      console.log(itemsSuccess);
+      if(itemsSuccess.length === cart.products.length) {
+        console.log(1231231312);
+        await Order.updateOne({_id: orderId}, {isSuccess: true})
+      }
 
       // All items are cancelled => Cancel order
       if (cart.products.length === items.length) {
@@ -337,7 +352,6 @@ router.get('/statistical/test', async (req, res) => {
   let findByMonth = [];
   if(status == 1) {
     findByMonth = orders.filter(order => moment(order._doc.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD'));
-    console.log(findByMonth);
   } else if(status == 2) {
     findByMonth = orders.filter(order => moment(order._doc.created).month() === (new Date().getMonth()));
   } else {
@@ -349,6 +363,7 @@ router.get('/statistical/test', async (req, res) => {
   let result = {
     totalOrder: findByMonth.length,
     totalMoney: 0,
+    totalOrderNotProcess: 0,
     totalProductProcessing: 0,
     totalProductShipped: 0,
     totalProductNotProcessing: 0,
@@ -359,6 +374,7 @@ router.get('/statistical/test', async (req, res) => {
   findByMonth.forEach(item => {
     result.totalMoney = result.totalMoney + item._doc.total;
 
+    if(!item.isSuccess) result.totalOrderNotProcess = result.totalOrderNotProcess + 1;
     item._doc.cart.products.forEach(product => {
       if(product.status == 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
       

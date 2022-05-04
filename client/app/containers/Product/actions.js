@@ -243,8 +243,6 @@ export const addProduct = () => {
 
             const brand = unformatSelectOptions([product.brand]);
 
-      console.log('user', user._id);
-
       const newProduct = {
         sku: product.sku,
         name: product.name,

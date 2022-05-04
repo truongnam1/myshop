@@ -1,0 +1,13 @@
+.image-card-statistical {
+  width: 40px;
+  height: 40px;
+  margin: auto;
+}
+.hidden-text-too-long {
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  display: -webkit-box;
+}

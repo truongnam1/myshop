@@ -15,6 +15,8 @@ import DropdownConfirm from '../../Common/DropdownConfirm';
 const OrderItems = props => {
   const { order, user, updateOrderItemStatus } = props;
 
+  console.log('order', order);
+
   const renderPopoverContent = item => {
     const statuses = [
       'Not processed',
@@ -40,7 +42,7 @@ const OrderItems = props => {
   };
 
   const renderItemsAction = item => {
-    const isAdmin = user.role === 'ROLE_ADMIN' || user.role === 'ROLE_MERCHANT';
+    const isAdmin = user.role === 'ROLE_ADMIN' || (user.role === 'ROLE_MERCHANT' && order.user !== user._id);
 
     if (item.status === 'Delivered') {
       return (
