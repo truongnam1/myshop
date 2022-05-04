@@ -6,12 +6,14 @@ import { Canvas } from 'react-three-fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
 const Modal3D = props => {
-  const { buttonLabel, className } = props;
+  const { buttonLabel, className, file3dUrl } = props;
 
   const [modal, setModal] = useState(false);
-
   const toggle = () => setModal(!modal);
-  const modelPath = '/test3d/buster_drone/scene.gltf';
+  let modelPath = '/test3d/buster_drone/scene.gltf';
+  if (file3dUrl) {
+    modelPath = file3dUrl;
+  }
 
   function Model(props) {
     const { scene } = useGLTF(modelPath);
@@ -30,7 +32,7 @@ const Modal3D = props => {
         size='lg'
         style={{ minHeight: '50vh' }}
       >
-        <ModalHeader toggle={toggle}>Modal title</ModalHeader>
+        {/* <ModalHeader toggle={toggle}>Modal title</ModalHeader> */}
         <ModalBody>
           <Canvas
             pixelRatio={[1, 2]}
@@ -43,14 +45,14 @@ const Modal3D = props => {
             <OrbitControls />
           </Canvas>
         </ModalBody>
-        <ModalFooter>
+        {/* <ModalFooter>
           <Button color='primary' onClick={toggle}>
             Do Something
           </Button>{' '}
           <Button color='secondary' onClick={toggle}>
             Cancel
           </Button>
-        </ModalFooter>
+        </ModalFooter> */}
       </Modal>
     </div>
   );

@@ -20,7 +20,6 @@ import ProductReviews from '../../components/Store/ProductReviews';
 import SocialShare from '../../components/Store/SocialShare';
 import Modal3D from './modal3D';
 
-
 class ProductPage extends React.PureComponent {
   componentDidMount() {
     const slug = this.props.match.params.slug;
@@ -80,9 +79,12 @@ class ProductPage extends React.PureComponent {
                   ) : (
                     <p className='stock in-stock'>In stock</p>
                   )}
-                  </div>
-                  <Button variant="primary" text='hiển thị 3d'></Button>
-                  <Modal3D buttonLabel="link3d"></Modal3D>
+                </div>
+                <Button variant='primary' text='hiển thị 3d'></Button>
+                <Modal3D
+                  buttonLabel='link3d'
+                  file3dUrl={product.file3dUrl}
+                ></Modal3D>
               </Col>
               <Col xs='12' md='7' lg='7' className='mb-3 px-3 px-md-2'>
                 <div className='product-container'>

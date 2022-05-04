@@ -16,13 +16,24 @@ const role = require('../../middleware/role');
 const checkAuth = require('../../helpers/auth');
 var fs = require('fs');
 var path = require('path');
+const unzipper = require('unzipper');
 // const storage = multer.memoryStorage();
 
 // SET STORAGE
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     if (file.fieldname === 'file3d') {
-      cb(null, 'public/uploads/3d');
+      const folderName = 'public/uploads/3d/folder-3d-' + Date.now();
+
+      try {
+        if (!fs.existsSync(folderName)) {
+          fs.mkdirSync(folderName);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      cb(null, folderName);
     } else if (file.fieldname === 'image') {
       cb(null, 'public/uploads/images');
     }
@@ -503,8 +514,30 @@ router.post(
         imageUrl = image.path.replace('public', '');
         imageKey = image.filename;
       }
+
       if (file3d) {
-        file3dUrl = file3d.path.replace('public', '');
+        await fs
+          .createReadStream(file3d.path)
+          .pipe(unzipper.Extract({ path: path.dirname(file3d.path) }))
+          .promise();
+        console.log('unzip ok');
+
+        await fs.promises.readdir(path.dirname(file3d.path)).then(paths => {
+          for (const pathFile of paths) {
+            console.log(pathFile);
+
+            const extName = path.extname(pathFile).toLowerCase();
+            if (extName == '.glb' || extName == '.gltf') {
+              console.warn('ok file 3d');
+
+              file3dUrl = `${path.dirname(file3d.path)}\\${pathFile}`
+                .replace('public', '')
+                .replace(/\\/g, '/');
+
+              console.log('file3d: ' + file3dUrl);
+            }
+          }
+        });
       }
 
       const product = new Product({
@@ -521,6 +554,7 @@ router.post(
         file3dUrl,
         own
       });
+      console.log('product', product);
 
       const savedProduct = await product.save();
 
@@ -531,7 +565,8 @@ router.post(
       });
     } catch (error) {
       return res.status(400).json({
-        error: 'Your request could not be processed. Please try again.'
+        error: 'Your request could not be processed. Please try again.',
+        xxxx: error
       });
     }
   }
