@@ -4,6 +4,8 @@ const Mongoose = require('mongoose');
 const moment = require('moment');
 // Bring in Models & Helpers
 const Order = require('../../models/order');
+const Merchant = require('../../models/merchant');
+const User = require('../../models/user');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const auth = require('../../middleware/auth');
@@ -337,16 +339,44 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
   }
 });
 
-router.get('/statistical/test', async (req, res) => {
+router.get('/statistical/test',auth ,async (req, res) => {
   
   const status = req.query?.status;
+  const user = req.user;
 
-  const orders = await Order.find().populate({
-    path: 'cart',
-    populate: {
-      path: 'products.product',
-    }
-  });
+  let orders;
+  let statisticalAdmin = {
+    totalMerchant: 0,
+    totalAccount: 0,
+    totalProduct: 0,
+  }
+
+ 
+
+  if(user.role === 'ROLE_MERCHANT') {
+    orders = await Order.find({shop: user._id}).populate({
+      path: 'cart',
+      populate: {
+        path: 'products.product',
+      }
+    })
+  } else {
+    orders = await Order.find().populate({
+      path: 'cart',
+      populate: {
+        path: 'products.product',
+      }
+    });
+
+    const [merchant, user, product] = await Promise.all([Merchant.count(), User.count(), Product.count()]);
+
+    statisticalAdmin.totalMerchant = merchant;
+    statisticalAdmin.totalAccount = user;
+    statisticalAdmin.totalProduct = product;
+    
+  }
+
+  
 
 
   let findByMonth = [];
@@ -358,8 +388,6 @@ router.get('/statistical/test', async (req, res) => {
     findByMonth = orders.filter(order => moment(order._doc.created).year() === (new Date().getFullYear()));
   }
 
-  
-
   let result = {
     totalOrder: findByMonth.length,
     totalMoney: 0,
@@ -370,6 +398,12 @@ router.get('/statistical/test', async (req, res) => {
     totalProductDelivered: 0,
     totalProductCancelled: 0,
   };
+
+  if(!(user.role === 'ROLE_MERCHANT')) {
+    result = {...result,...statisticalAdmin};
+  }
+
+  
 
   findByMonth.forEach(item => {
     result.totalMoney = result.totalMoney + item._doc.total;
