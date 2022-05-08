@@ -302,9 +302,7 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
       const items = cart.products.filter(item => item.status === 'Cancelled');
       const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
 
-      console.log(itemsSuccess);
       if(itemsSuccess.length === cart.products.length) {
-        console.log(1231231312);
         await Order.updateOne({_id: orderId}, {isSuccess: true})
       }
 
@@ -349,6 +347,7 @@ router.get('/statistical/test',auth ,async (req, res) => {
     totalMerchant: 0,
     totalAccount: 0,
     totalProduct: 0,
+    totalUserWeek: [],
   }
 
  
@@ -369,10 +368,40 @@ router.get('/statistical/test',auth ,async (req, res) => {
     });
 
     const [merchant, user, product] = await Promise.all([Merchant.count(), User.count(), Product.count()]);
+    
+    const a = new Date();
+
+
+
+    let dates = [];
+    
+    for(let i=0; i < 7;++i) {
+    
+        let yesterday = new Date(a.getTime());
+    
+        yesterday.setDate(a.getDate() - i);
+    
+        dates = [...dates, yesterday];
+    
+    }
+
+    const totalUserWeek = await Promise.all(dates.map(async (date) => {
+      return User.count({created: {$lte: date}})
+    }));
+
+    const rs = dates.map((date, index) => {
+      return {
+        date: moment(date).format('YYYY-MM-DD'),
+        count: totalUserWeek[index],
+      }
+    })
+
+    
 
     statisticalAdmin.totalMerchant = merchant;
     statisticalAdmin.totalAccount = user;
     statisticalAdmin.totalProduct = product;
+    statisticalAdmin.totalUserWeek = rs;
     
   }
 

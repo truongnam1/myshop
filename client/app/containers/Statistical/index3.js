@@ -30,6 +30,25 @@ function StatisticalAdmin() {
   const statisticalRef = useRef({});
   const totalStatisticalRef = useRef({});
   const [statisticals, setStatisticals] = useState([]);
+  const [statisticalUser, setStatisticalUser] = useState([]);
+  const [userWeek, setUserWeek] = useState({
+    labels: UserData.map((data) => data.year),
+    datasets: [
+      {
+        label: "Users Gained",
+        data: UserData.map((data) => data.userGain),
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
 
 
   useEffect(() => {
@@ -56,14 +75,36 @@ function StatisticalAdmin() {
       ],
     }
     setUserData(newUserData);
-  }, [statisticals])
+  }, [statisticals]);
+
+  useEffect(() => {
+    const userWeek = {
+      labels: statisticalUser.map((item) => item.date),
+      datasets: [
+        {
+          label: "Statistical Order",
+          data: statisticalUser.map((item) => item.count),
+          backgroundColor: [
+            "rgba(75,192,192,1)",
+            "#ecf0f1",
+            "#50AF95",
+            "#f3ba2f",
+            "#2a71d0",
+          ],
+          borderColor: "black",
+          borderWidth: 2,
+        },
+      ],
+    }
+    setUserWeek(userWeek);
+  }, [statisticalUser])
 
   const getListStatistical = async (params) => {
     const result = await statistical(params);
     statisticalRef.current = result;
-    const {totalMoney, totalOrder, totalMerchant, totalAccount, ...rest} = result;
+    const {totalProduct, totalOrder, totalMerchant, totalAccount, totalUserWeek, ...rest} = result;
     totalStatisticalRef.current = {
-      totalMoney: totalMoney,
+      totalProduct: totalProduct,
       totalOrder: totalOrder,
       totalMerchant: totalMerchant,
       totalAccount: totalAccount,
@@ -71,9 +112,12 @@ function StatisticalAdmin() {
     
     const newResultArr = Object.keys(rest);
 
+    if(totalUserWeek) setStatisticalUser(totalUserWeek)
+
     if(result) setStatisticals(newResultArr);
   }
 
+  console.log(userWeek);
   // IF YOU SEE THIS COMMENT: I HAVE GOOD EYESIGHT
 
   return (
@@ -85,7 +129,7 @@ function StatisticalAdmin() {
               <StatisticalCart title={'Tổng đơn'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '}/>
             </div>
             <div className="col-xl-3">
-            <StatisticalCart title={'Tổng tiền'} value={totalStatisticalRef.current.totalMoney} unit={'VND'}/>
+            <StatisticalCart title={'Tổng sản phẩm'} value={totalStatisticalRef.current.totalProduct} unit={'sản phẩm'}/>
             </div>
             <div className="col-xl-3">
             <StatisticalCart title={'Tổng đại lý'} value={totalStatisticalRef.current.totalMerchant} unit={'đại lý'}/>
@@ -96,14 +140,14 @@ function StatisticalAdmin() {
           </div>
         </div>
         <div className="col-xl-6">
-          <div style={{ width: 500 }}>
+          <div style={{ width: 450 }}>
             <BarChart chartData={userData} />
           </div>
         </div>
 
         <div className="col-xl-6">
-          <div style={{ width: 500 }}>
-            <LineChart chartData={userData} />
+          <div style={{ width: 450 }}>
+            <LineChart chartData={userWeek} />
           </div>
         </div>
     </div>
