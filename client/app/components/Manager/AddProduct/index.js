@@ -28,7 +28,7 @@ const AddProduct = props => {
     brands,
     image,
     file3d,
-    setFormErrors,
+    setFormErrors
   } = props;
 
   const handleSubmit = event => {
@@ -162,8 +162,9 @@ const AddProduct = props => {
               value={file3d}
               onInputChange={(name, value) => {
                 const typeFile = value.name.split('.')[1];
-                if(typeFile === 'zip' || typeFile === 'rar') productChange(name, value);
-                else setFormErrors({'file3d': 'Định dạng của file không đúng!'})
+                if (typeFile === 'zip') productChange(name, value);
+                else
+                  setFormErrors({ file3d: 'Định dạng của file không đúng!' });
               }}
             />
           </Col>
