@@ -142,9 +142,9 @@ export const fetchProduct = id => {
             );
 
             response.data.product.brand = brandData[0];
-
-            const product = {...response.data.product, inventory };
-
+              const {imageKey, file3dUrl} = response.data.product;
+            const product = {...response.data.product, inventory, image: imageKey, file3d:  file3dUrl};
+              
             dispatch({
                 type: FETCH_PRODUCT,
                 payload: product
@@ -234,10 +234,12 @@ export const addProduct = () => {
                 quantity: 'required|numeric',
                 price: 'required|numeric',
                 taxable: 'required',
-                image: 'required'
+                image: 'required',
+                file3d: 'required',
             };
 
             const product = getState().product.productFormData;
+            
             const user = getState().account.user;
             const brands = getState().brand.brandsSelect;
 
@@ -249,7 +251,7 @@ export const addProduct = () => {
         description: product.description,
         price: product.price,
         quantity: product.quantity,
-        image: product.image,
+        image: product.image?.name ? product.image : null,
         file3d: product.file3d,
         isActive: product.isActive,
         taxable: product.taxable.value,
@@ -261,7 +263,7 @@ export const addProduct = () => {
             : brands[1].value,
         own: user._id,
       };
-
+      console.log(newProduct);
             const { isValid, errors } = allFieldsValidation(newProduct, rules, {
                 'required.sku': 'Sku is required.',
                 'required.name': 'Name is required.',
@@ -270,9 +272,10 @@ export const addProduct = () => {
                 'required.quantity': 'Quantity is required.',
                 'required.price': 'Price is required.',
                 'required.taxable': 'Taxable is required.',
-                'required.image': 'Please upload files with jpg, jpeg, png format.'
+                'required.image': 'Please upload files with jpg, jpeg, png format.',
+                'required.file3d': 'Please upload files with zip.'
             });
-
+            console.log(errors);
             if (!isValid) {
                 return dispatch({ type: SET_PRODUCT_FORM_ERRORS, payload: errors });
             }
@@ -329,7 +332,7 @@ export const updateProduct = () => {
                 description: 'required|max:200',
                 quantity: 'required|numeric',
                 price: 'required|numeric',
-                taxable: 'required'
+                taxable: 'required',
             };
 
             const product = getState().product.product;
