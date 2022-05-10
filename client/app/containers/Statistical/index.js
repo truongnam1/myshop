@@ -185,14 +185,17 @@ function Statistical() {
 
         <div className="col-xl-12" style={{marginBottom: '15px'}}>
           <div className="row" style={{justifyContent: 'space-around'}}>
-            <div className="col-xl-3">
-              <StatisticalCart title={'Total order'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '}/>
+            <div className="col-xl-3 col-md-6">
+              <StatisticalCart title={'Tổng đơn'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '} src={'https://en.pimg.jp/066/267/763/1/66267763.jpg'}/>
             </div>
-            <div className="col-xl-3">
-            <StatisticalCart title={'Total money'} value={totalStatisticalRef.current.totalMoney} unit={'VND'}/>
+            <div className="col-xl-3 col-md-6">
+            <StatisticalCart title={'Total money'} value={totalStatisticalRef.current.totalMoney} unit={'VND'} src={'https://img.freepik.com/free-vector/sack-money-big-pile-cash-money-icon-illustration-money-bag-flat-icon_385450-362.jpg'}/>
             </div>
-            <div className="col-xl-3">
+            <div className="col-xl-3 col-md-6">
             <StatisticalCart title={'Total Order Not Process'} value={totalStatisticalRef.current.totalOrderNotProcess} unit={'Đơn'}/>
+            </div>
+            <div className="col-xl-3 col-md-6">
+              <StatisticalCart title={'Total order'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '} />
             </div>
           </div>
         </div>

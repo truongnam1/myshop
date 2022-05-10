@@ -126,16 +126,16 @@ function StatisticalAdmin() {
         <div className="col-xl-12" style={{marginBottom: '15px'}}>
           <div className="row" style={{justifyContent: 'space-around'}}>
             <div className="col-xl-3">
-              <StatisticalCart title={'Tổng đơn'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '}/>
+              <StatisticalCart title={'Tổng đơn'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '} src={'https://en.pimg.jp/066/267/763/1/66267763.jpg'}/>
             </div>
             <div className="col-xl-3">
-            <StatisticalCart title={'Tổng sản phẩm'} value={totalStatisticalRef.current.totalProduct} unit={'sản phẩm'}/>
+            <StatisticalCart title={'Tổng sản phẩm'} value={totalStatisticalRef.current.totalProduct} unit={'sản phẩm'} src={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC9-Iuu1IyILgixFhrPldHxP6bmDGjk38ZCw&usqp=CAU'}/>
             </div>
             <div className="col-xl-3">
-            <StatisticalCart title={'Tổng đại lý'} value={totalStatisticalRef.current.totalMerchant} unit={'đại lý'}/>
+            <StatisticalCart title={'Tổng đại lý'} value={totalStatisticalRef.current.totalMerchant} unit={'đại lý'} src={'https://image.shutterstock.com/image-vector/store-icon-isolated-on-white-600w-1392339080.jpg'}/>
             </div>
             <div className="col-xl-3">
-            <StatisticalCart title={'Tổng người dùng'} value={totalStatisticalRef.current.totalAccount} unit={'người'}/>
+            <StatisticalCart title={'Tổng người dùng'} value={totalStatisticalRef.current.totalAccount} unit={'người'} src={'https://cdn-icons-png.flaticon.com/512/219/219986.png'}/>
             </div>
           </div>
         </div>
