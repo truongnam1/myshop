@@ -56,6 +56,26 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+router.get('/all', auth, async (req, res) => {
+  try {
+    console.log(req.query);
+    const {limit, page} = req.query;
+    User.count({}, function(err,count) {
+      User.find().limit(Number(limit)).skip(Number(limit) *Number(page-1)).exec(function (err, doc) {
+        if(err) { res.status(500).json(err); return; };
+        res.status(200).json({data: doc, "pagination": {total: count, totalPage: count % limit !== 0 ? Number(Math.floor(count / limit)) + 1: count/limit, current_page: +page}});
+    })
+    })
+    // res.status(200).json({
+    //   data: userDoc
+    // });
+  } catch (error) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
+
 router.put('/', auth, async (req, res) => {
   try {
     const user = req.user._id;

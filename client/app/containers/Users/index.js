@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 
 import actions from '../../actions';
 
-import UserList from '../../components/Manager/UserList';
+import UserTable from '../../components/Manager/UserList/userTable';
 import UserSearch from '../../components/Manager/UserSearch';
 import SubPage from '../../components/Manager/SubPage';
 import NotFound from '../../components/Common/NotFound';
@@ -23,8 +23,8 @@ class Users extends React.PureComponent {
       <div className='users-dashboard'>
         <SubPage title='Users' />
         <UserSearch onSearchSubmit={searchUsers} />
-        {users.length > 0 ? (
-          <UserList users={users} />
+        {!(users.length > 0) ? (
+          <UserTable/>
         ) : (
           <NotFound message='No Users Found!' />
         )}
