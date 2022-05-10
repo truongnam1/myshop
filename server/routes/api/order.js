@@ -15,6 +15,8 @@ const mailtrap = require('../../services/mailtrap');
 
 const store = require('../../helpers/store');
 
+const OrderService = require('../../services/order/index');
+
 router.post('/add', auth, async (req, res) => {
   try {
     const cart = req.body.cartId;
@@ -32,9 +34,11 @@ router.post('/add', auth, async (req, res) => {
     //   total
     // });
 
-    
     const orderDoc = await Order.insertMany(orders);
-    mailtrap.sendEmail(req.user.email, 'order-confirmation', null, {_id: orderDoc[0]._doc._id, firstName: req.user.firstName});
+    mailtrap.sendEmail(req.user.email, 'order-confirmation', null, {
+      _id: orderDoc[0]._doc._id,
+      firstName: req.user.firstName
+    });
     res.status(200).json({
       success: true,
       message: `Your order has been placed successfully!`,
@@ -126,9 +130,12 @@ router.get('/', auth, async (req, res) => {
     const status = req.query.status;
 
     let ordersDoc;
-    
-    if(!isUser) {
-      ordersDoc = await Order.find({ shop: user, isSuccess: status || false}).populate({
+
+    if (!isUser) {
+      ordersDoc = await Order.find({
+        shop: user,
+        isSuccess: status || false
+      }).populate({
         path: 'cart',
         populate: {
           path: 'products.product',
@@ -138,7 +145,10 @@ router.get('/', auth, async (req, res) => {
         }
       });
     } else {
-      ordersDoc = await Order.find({ user, isSuccess: status || false }).populate({
+      ordersDoc = await Order.find({
+        user,
+        isSuccess: status || false
+      }).populate({
         path: 'cart',
         populate: {
           path: 'products.product',
@@ -148,11 +158,10 @@ router.get('/', auth, async (req, res) => {
         }
       });
 
-      ordersDoc = ordersDoc.filter((value, index, self) =>
-        index === self.findIndex((t) => (
-          t.cart._id === value.cart._id
-        ))
-      )
+      ordersDoc = ordersDoc.filter(
+        (value, index, self) =>
+          index === self.findIndex(t => t.cart._id === value.cart._id)
+      );
     }
 
     ordersDoc = ordersDoc.filter(order => order.cart);
@@ -231,7 +240,7 @@ router.get('/:orderId', auth, async (req, res) => {
       totalTax: 0,
       products: orderDoc?.cart?.products,
       cartId: orderDoc.cart._id,
-      user: orderDoc.user,
+      user: orderDoc.user
     };
 
     order = store.caculateTaxAmount(order);
@@ -285,12 +294,15 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
       }
     );
 
+    const cart = await Cart.findOne({ _id: cartId });
+    const itemsSuccess = cart.products.filter(
+      item => item.status == 'Processing'
+    );
 
-      const cart = await Cart.findOne({ _id: cartId });
-      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
-
-      await Order.updateOne({_id: orderId}, {isSuccess: itemsSuccess.length === cart.products.length ? true : false});
-
+    await Order.updateOne(
+      { _id: orderId },
+      { isSuccess: itemsSuccess.length === cart.products.length ? true : false }
+    );
 
     if (status === 'Cancelled') {
       await Product.updateOne(
@@ -300,10 +312,12 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
 
       const cart = await Cart.findOne({ _id: cartId });
       const items = cart.products.filter(item => item.status === 'Cancelled');
-      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
+      const itemsSuccess = cart.products.filter(
+        item => item.status == 'Processing'
+      );
 
-      if(itemsSuccess.length === cart.products.length) {
-        await Order.updateOne({_id: orderId}, {isSuccess: true})
+      if (itemsSuccess.length === cart.products.length) {
+        await Order.updateOne({ _id: orderId }, { isSuccess: true });
       }
 
       // All items are cancelled => Cancel order
@@ -337,8 +351,7 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
   }
 });
 
-router.get('/statistical/test',auth ,async (req, res) => {
-  
+router.get('/statistical/test', auth, async (req, res) => {
   const status = req.query?.status;
   const user = req.user;
 
@@ -347,112 +360,96 @@ router.get('/statistical/test',auth ,async (req, res) => {
     totalMerchant: 0,
     totalAccount: 0,
     totalProduct: 0,
-    totalUserWeek: [],
-  }
+    totalUserWeek: []
+  };
 
- 
-
-  if(user.role === 'ROLE_MERCHANT') {
-    orders = await Order.find({shop: user._id}).populate({
+  if (user.role === 'ROLE_MERCHANT') {
+    orders = await Order.find({ shop: user._id }).populate({
       path: 'cart',
       populate: {
-        path: 'products.product',
+        path: 'products.product'
       }
-    })
+    });
   } else {
     orders = await Order.find().populate({
       path: 'cart',
       populate: {
-        path: 'products.product',
+        path: 'products.product'
       }
     });
 
-    const [merchant, user, product] = await Promise.all([Merchant.count(), User.count(), Product.count()]);
-    
-    const a = new Date();
-
-
-
-    let dates = [];
-    
-    for(let i=0; i < 7;++i) {
-    
-        let yesterday = new Date(a.getTime());
-    
-        yesterday.setDate(a.getDate() - i);
-    
-        dates = [...dates, yesterday];
-    
-    }
-
-    const totalUserWeek = await Promise.all(dates.map(async (date) => {
-      return User.count({created: {$lte: date}})
-    }));
-
-    const rs = dates.map((date, index) => {
-      return {
-        date: moment(date).format('YYYY-MM-DD'),
-        count: totalUserWeek[index],
-      }
-    })
-
-    
+    const [merchant, user, product] = await Promise.all([
+      Merchant.count(),
+      User.count(),
+      Product.count()
+    ]);
+    const totalUserWeek = await OrderService.totalUserWeek();
 
     statisticalAdmin.totalMerchant = merchant;
     statisticalAdmin.totalAccount = user;
     statisticalAdmin.totalProduct = product;
-    statisticalAdmin.totalUserWeek = rs;
-    
+    statisticalAdmin.totalUserWeek = totalUserWeek;
   }
 
-  
-
-
   let findByMonth = [];
-  if(status == 1) {
-    findByMonth = orders.filter(order => moment(order._doc.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD'));
-  } else if(status == 2) {
-    findByMonth = orders.filter(order => moment(order._doc.created).month() === (new Date().getMonth()));
+  if (status == 1) {
+    findByMonth = orders.filter(
+      order =>
+        moment(order._doc.created).format('YYYY-MM-DD') ===
+        moment().format('YYYY-MM-DD')
+    );
+  } else if (status == 2) {
+    findByMonth = orders.filter(
+      order => moment(order._doc.created).month() === new Date().getMonth()
+    );
   } else {
-    findByMonth = orders.filter(order => moment(order._doc.created).year() === (new Date().getFullYear()));
+    findByMonth = orders.filter(
+      order => moment(order._doc.created).year() === new Date().getFullYear()
+    );
+  }
+  var findByMonthTest;
+  if (user.role === 'ROLE_MERCHANT') {
+    findByMonthTest = OrderService.getOrderMerchant({ orders, status });
+  } else if (user.role === 'ROLE_ADMIN') {
+    findByMonthTest = OrderService.getOrderAdmin({ status });
   }
 
   let result = {
-    totalOrder: findByMonth.length,
+    // totalOrder: findByMonth.length,
     totalMoney: 0,
+    totalOrder: findByMonthTest.length,
     totalOrderNotProcess: 0,
     totalProductProcessing: 0,
     totalProductShipped: 0,
     totalProductNotProcessing: 0,
     totalProductDelivered: 0,
-    totalProductCancelled: 0,
+    totalProductCancelled: 0
   };
 
-  if(!(user.role === 'ROLE_MERCHANT')) {
-    result = {...result,...statisticalAdmin};
+  if (!(user.role === 'ROLE_MERCHANT')) {
+    result = { ...result, ...statisticalAdmin };
   }
-
-  
 
   findByMonth.forEach(item => {
     result.totalMoney = result.totalMoney + item._doc.total;
 
-    if(!item.isSuccess) result.totalOrderNotProcess = result.totalOrderNotProcess + 1;
+    if (!item.isSuccess)
+      result.totalOrderNotProcess = result.totalOrderNotProcess + 1;
     item._doc.cart.products.forEach(product => {
-      if(product.status == 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
-      
-      else if(product.status == 'Shipped') result.totalProductShipped = result.totalProductShipped + 1;
-
-      else if(product.status == 'Not processed') result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
-
-      else if(product.status == 'Delivered') result.totalProductDelivered = result.totalProductDelivered + 1;
-
+      if (product.status == 'Processing')
+        result.totalProductProcessing = result.totalProductProcessing + 1;
+      else if (product.status == 'Shipped')
+        result.totalProductShipped = result.totalProductShipped + 1;
+      else if (product.status == 'Not processed')
+        result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
+      else if (product.status == 'Delivered')
+        result.totalProductDelivered = result.totalProductDelivered + 1;
       else result.totalProductCancelled = result.totalProductCancelled + 1;
-    })
-  })
+    });
+  });
 
-  return res.json(result)
-})
+  return res.json(result);
+});
 
 const increaseQuantity = products => {
   let bulkOptions = products.map(item => {
