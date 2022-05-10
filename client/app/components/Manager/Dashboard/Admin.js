@@ -24,7 +24,7 @@ import Merchant from '../../../containers/Merchant';
 import Review from '../../../containers/Review';
 import Wishlist from '../../../containers/WishList';
 import Support from '../../../containers/Support';
-
+import Statistical from '../../../containers/Statistical/index3';
 const Admin = props => {
   return (
     <div className='admin'>
@@ -47,6 +47,7 @@ const Admin = props => {
               <Route path='/dashboard/review' component={Review} />
               <Route path='/dashboard/wishlist' component={Wishlist} />
               <Route path='/dashboard/support' component={Support} />
+              <Route path='/dashboard/statistical' component={Statistical} />
               <Route path='*' component={Page404} />
             </Switch>
           </div>

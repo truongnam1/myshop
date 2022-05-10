@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Mongoose = require('mongoose');
-
+const moment = require('moment');
 // Bring in Models & Helpers
 const Order = require('../../models/order');
+const Merchant = require('../../models/merchant');
+const User = require('../../models/user');
 const Cart = require('../../models/cart');
 const Product = require('../../models/product');
 const auth = require('../../middleware/auth');
@@ -30,13 +32,13 @@ router.post('/add', auth, async (req, res) => {
     //   total
     // });
 
-    await mailtrap.sendEmail(order.user.email, 'order-confirmation', newOrder);
+    
     const orderDoc = await Order.insertMany(orders);
-
+    mailtrap.sendEmail(req.user.email, 'order-confirmation', null, {_id: orderDoc[0]._doc._id, firstName: req.user.firstName});
     res.status(200).json({
       success: true,
       message: `Your order has been placed successfully!`,
-      order: { _id: orderDoc._id }
+      order: { _id: orderDoc[0]._doc._id }
     });
   } catch (error) {
     res.status(400).json({
@@ -120,15 +122,38 @@ router.get('/', auth, async (req, res) => {
   try {
     const user = req.user._id;
 
-    let ordersDoc = await Order.find({ shop: user }).populate({
-      path: 'cart',
-      populate: {
-        path: 'products.product',
+    const isUser = req.query.isUser;
+    const status = req.query.status;
+
+    let ordersDoc;
+    
+    if(!isUser) {
+      ordersDoc = await Order.find({ shop: user, isSuccess: status || false}).populate({
+        path: 'cart',
         populate: {
-          path: 'brand'
+          path: 'products.product',
+          populate: {
+            path: 'brand'
+          }
         }
-      }
-    });
+      });
+    } else {
+      ordersDoc = await Order.find({ user, isSuccess: status || false }).populate({
+        path: 'cart',
+        populate: {
+          path: 'products.product',
+          populate: {
+            path: 'brand'
+          }
+        }
+      });
+
+      ordersDoc = ordersDoc.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.cart._id === value.cart._id
+        ))
+      )
+    }
 
     ordersDoc = ordersDoc.filter(order => order.cart);
 
@@ -205,7 +230,8 @@ router.get('/:orderId', auth, async (req, res) => {
       created: orderDoc.created,
       totalTax: 0,
       products: orderDoc?.cart?.products,
-      cartId: orderDoc.cart._id
+      cartId: orderDoc.cart._id,
+      user: orderDoc.user,
     };
 
     order = store.caculateTaxAmount(order);
@@ -259,6 +285,13 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
       }
     );
 
+
+      const cart = await Cart.findOne({ _id: cartId });
+      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
+
+      await Order.updateOne({_id: orderId}, {isSuccess: itemsSuccess.length === cart.products.length ? true : false});
+
+
     if (status === 'Cancelled') {
       await Product.updateOne(
         { _id: foundCartProduct.product },
@@ -267,6 +300,11 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
 
       const cart = await Cart.findOne({ _id: cartId });
       const items = cart.products.filter(item => item.status === 'Cancelled');
+      const itemsSuccess = cart.products.filter(item => item.status == 'Processing');
+
+      if(itemsSuccess.length === cart.products.length) {
+        await Order.updateOne({_id: orderId}, {isSuccess: true})
+      }
 
       // All items are cancelled => Cancel order
       if (cart.products.length === items.length) {
@@ -298,6 +336,123 @@ router.put('/status/item/:itemId', auth, async (req, res) => {
     });
   }
 });
+
+router.get('/statistical/test',auth ,async (req, res) => {
+  
+  const status = req.query?.status;
+  const user = req.user;
+
+  let orders;
+  let statisticalAdmin = {
+    totalMerchant: 0,
+    totalAccount: 0,
+    totalProduct: 0,
+    totalUserWeek: [],
+  }
+
+ 
+
+  if(user.role === 'ROLE_MERCHANT') {
+    orders = await Order.find({shop: user._id}).populate({
+      path: 'cart',
+      populate: {
+        path: 'products.product',
+      }
+    })
+  } else {
+    orders = await Order.find().populate({
+      path: 'cart',
+      populate: {
+        path: 'products.product',
+      }
+    });
+
+    const [merchant, user, product] = await Promise.all([Merchant.count(), User.count(), Product.count()]);
+    
+    const a = new Date();
+
+
+
+    let dates = [];
+    
+    for(let i=0; i < 7;++i) {
+    
+        let yesterday = new Date(a.getTime());
+    
+        yesterday.setDate(a.getDate() - i);
+    
+        dates = [...dates, yesterday];
+    
+    }
+
+    const totalUserWeek = await Promise.all(dates.map(async (date) => {
+      return User.count({created: {$lte: date}})
+    }));
+
+    const rs = dates.map((date, index) => {
+      return {
+        date: moment(date).format('YYYY-MM-DD'),
+        count: totalUserWeek[index],
+      }
+    })
+
+    
+
+    statisticalAdmin.totalMerchant = merchant;
+    statisticalAdmin.totalAccount = user;
+    statisticalAdmin.totalProduct = product;
+    statisticalAdmin.totalUserWeek = rs;
+    
+  }
+
+  
+
+
+  let findByMonth = [];
+  if(status == 1) {
+    findByMonth = orders.filter(order => moment(order._doc.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD'));
+  } else if(status == 2) {
+    findByMonth = orders.filter(order => moment(order._doc.created).month() === (new Date().getMonth()));
+  } else {
+    findByMonth = orders.filter(order => moment(order._doc.created).year() === (new Date().getFullYear()));
+  }
+
+  let result = {
+    totalOrder: findByMonth.length,
+    totalMoney: 0,
+    totalOrderNotProcess: 0,
+    totalProductProcessing: 0,
+    totalProductShipped: 0,
+    totalProductNotProcessing: 0,
+    totalProductDelivered: 0,
+    totalProductCancelled: 0,
+  };
+
+  if(!(user.role === 'ROLE_MERCHANT')) {
+    result = {...result,...statisticalAdmin};
+  }
+
+  
+
+  findByMonth.forEach(item => {
+    result.totalMoney = result.totalMoney + item._doc.total;
+
+    if(!item.isSuccess) result.totalOrderNotProcess = result.totalOrderNotProcess + 1;
+    item._doc.cart.products.forEach(product => {
+      if(product.status == 'Processing') result.totalProductProcessing = result.totalProductProcessing + 1;
+      
+      else if(product.status == 'Shipped') result.totalProductShipped = result.totalProductShipped + 1;
+
+      else if(product.status == 'Not processed') result.totalProductNotProcessing = result.totalProductNotProcessing + 1;
+
+      else if(product.status == 'Delivered') result.totalProductDelivered = result.totalProductDelivered + 1;
+
+      else result.totalProductCancelled = result.totalProductCancelled + 1;
+    })
+  })
+
+  return res.json(result)
+})
 
 const increaseQuantity = products => {
   let bulkOptions = products.map(item => {

@@ -35,12 +35,12 @@ export const setOrderLoading = value => {
   };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (params) => {
   return async (dispatch, getState) => {
     try {
       dispatch(setOrderLoading(true));
 
-      const response = await axios.get(`/api/order`);
+      const response = await axios.get(`/api/order`, {params});
 
       if (response.data.orders) {
         dispatch({
@@ -125,6 +125,17 @@ export const cancelOrder = () => {
     }
   };
 };
+
+export const statistical = (params) => {
+  return axios.get('/api/order/statistical/test', {params})
+                      .then((res) => {
+                        return res.data;
+                      })
+                      .catch(error => {
+                        console.log(error);
+                        return false;
+                      })
+}
 
 export const updateOrderItemStatus = (itemId, status) => {
   return async (dispatch, getState) => {

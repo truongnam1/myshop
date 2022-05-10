@@ -11,7 +11,8 @@
     { "to": "/orders", "name": "Orders" },
     { "to": "/review", "name": "Reviews" },
     { "to": "/wishlist", "name": "WishList" },
-    { "to": "/support", "name": "Support" }
+    { "to": "/support", "name": "Support" },
+    { "to": "/statistical", "name": "Statistical" }
   ],
   "ROLE_MERCHANT": [
     { "to": "", "name": "Account Details" },
@@ -21,7 +22,8 @@
     { "to": "/product", "name": "Products" },
     { "to": "/orders", "name": "Orders" },
     { "to": "/wishlist", "name": "WishList" },
-    { "to": "/support", "name": "Support" }
+    { "to": "/support", "name": "Support" },
+    { "to": "/statistical", "name": "Statistical" }
   ],
   "ROLE_MEMBER": [
     { "to": "", "name": "Account Details" },

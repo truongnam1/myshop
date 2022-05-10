@@ -20,7 +20,7 @@ import Brand from '../../../containers/Brand';
 import Order from '../../../containers/Order';
 import Wishlist from '../../../containers/WishList';
 import Support from '../../../containers/Support';
-
+import Statistical from '../../../containers/Statistical';
 const Customer = props => {
   return (
     <div className='merchant'>
@@ -39,6 +39,7 @@ const Customer = props => {
               <Route path='/dashboard/orders' component={Order} />
               <Route path='/dashboard/wishlist' component={Wishlist} />
               <Route path='/dashboard/support' component={Support} />
+              <Route path='/dashboard/statistical' component={Statistical} />
               <Route path='*' component={Page404} />
             </Switch>
           </div>
