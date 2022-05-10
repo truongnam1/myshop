@@ -27,13 +27,16 @@ const AddProduct = props => {
     addProduct,
     brands,
     image,
-    file3d
+    file3d,
+    setFormErrors,
   } = props;
 
   const handleSubmit = event => {
     event.preventDefault();
     addProduct();
   };
+
+  console.log('formErrors', formErrors['file3d']);
 
   return (
     <div className='add-product'>
@@ -152,13 +155,15 @@ const AddProduct = props => {
           <Col xs='12' md='12'>
             <Input
               type={'file'}
-              error={formErrors['file']}
+              error={formErrors['file3d']}
               name={'file3d'}
               label={'file3d'}
               placeholder={'Please Upload file 3d'}
               value={file3d}
               onInputChange={(name, value) => {
-                productChange(name, value);
+                const typeFile = value.name.split('.')[1];
+                if(typeFile === 'zip' || typeFile === 'rar') productChange(name, value);
+                else setFormErrors({'file3d': 'Định dạng của file không đúng!'})
               }}
             />
           </Col>

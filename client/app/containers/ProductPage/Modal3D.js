@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Canvas } from 'react-three-fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
+import './modal3d.css';
 
 const Modal3D = props => {
   const { buttonLabel, className, file3dUrl } = props;
@@ -22,7 +23,7 @@ const Modal3D = props => {
 
   return (
     <div>
-      <Button color='danger' onClick={toggle}>
+      <Button color='transp' onClick={toggle}>
         {buttonLabel}
       </Button>
       <Modal
@@ -30,7 +31,7 @@ const Modal3D = props => {
         toggle={toggle}
         className={className}
         size='lg'
-        style={{ minHeight: '50vh' }}
+        contentClassName="modal-3d-content"
       >
         {/* <ModalHeader toggle={toggle}>Modal title</ModalHeader> */}
         <ModalBody>

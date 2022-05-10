@@ -26,7 +26,8 @@ class Add extends React.PureComponent {
       formErrors,
       brands,
       productChange,
-      addProduct
+      addProduct,
+      setFormErrors
     } = this.props;
 
     return (
@@ -42,6 +43,7 @@ class Add extends React.PureComponent {
           brands={brands}
           productChange={productChange}
           addProduct={addProduct}
+          setFormErrors={setFormErrors}
         />
       </SubPage>
     );
@@ -53,7 +55,8 @@ const mapStateToProps = state => {
     user: state.account.user,
     productFormData: state.product.productFormData,
     formErrors: state.product.formErrors,
-    brands: state.brand.brandsSelect
+    brands: state.brand.brandsSelect,
+    // setFormErrors: state.product.setFormErrors,
   };
 };
 

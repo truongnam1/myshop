@@ -50,7 +50,7 @@ const Input = props => {
           placeholder={placeholder}
           className={'textarea-text'}
         />
-        <span className='invalid-message'>{error && error[0]}</span>
+        <span className='invalid-message'>{error || ''}</span>
       </div>
     );
   } else if (type === 'number') {
@@ -81,7 +81,7 @@ const Input = props => {
           placeholder={placeholder}
           className={'input-number'}
         />
-        <span className='invalid-message'>{error && error[0]}</span>
+        <span className='invalid-message'>{error || ''}</span>
       </div>
     );
   } else if (type === 'stars') {
@@ -106,7 +106,7 @@ const Input = props => {
             onInputChange(name, value);
           }}
         />
-        <span className='invalid-message'>{error && error[0]}</span>
+        <span className='invalid-message'>{error || ''}</span>
       </div>
     );
   } else {
@@ -132,7 +132,7 @@ const Input = props => {
           />
           {inlineElement}
         </div>
-        <span className='invalid-message'>{error && error[0]}</span>
+        <span className='invalid-message'>{error || ''}</span>
       </div>
     );
   }

@@ -314,6 +314,12 @@ export const addProduct = () => {
     };
 };
 
+export const setFormErrors= (errors) => {
+  return async(dispatch, getState) => {
+    return dispatch({ type: SET_PRODUCT_FORM_ERRORS, payload: errors });
+  }
+}
+
 // update Product api
 export const updateProduct = () => {
     return async(dispatch, getState) => {

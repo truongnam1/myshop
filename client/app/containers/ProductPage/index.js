@@ -80,9 +80,9 @@ class ProductPage extends React.PureComponent {
                     <p className='stock in-stock'>In stock</p>
                   )}
                 </div>
-                <Button variant='primary' text='hiển thị 3d'></Button>
+                {/* <Button variant='primary' text='hiển thị 3d'></Button> */}
                 <Modal3D
-                  buttonLabel='link3d'
+                  buttonLabel={<Button variant='primary' text='hiển thị 3d'></Button>}
                   file3dUrl={product.file3dUrl}
                 ></Modal3D>
               </Col>
