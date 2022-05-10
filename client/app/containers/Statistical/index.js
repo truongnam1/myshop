@@ -11,7 +11,7 @@
 //   {value: 1, label: 'Ngày'},
 //   {value: 2, label: 'Tháng'},
 //   {value: 3, label: 'Năm'}
-// ]; 
+// ];
 // class Statistical extends React.PureComponent {
 
 //   constructor(props) {
@@ -31,7 +31,7 @@
 //   }
 //   async componentDidMount() {
 //     const result = await this.getListStatistical({status: 2});
-    
+
 //     this.setState({statistical: result});
 //   }
 
@@ -67,7 +67,7 @@
 //                 <h2>Tổng đơn hàng theo {this.state.select.label}</h2>
 //                 <p>{this.state.statistical.totalOrder} đơn</p>
 //           </div>
-          
+
 //           <div className='col-xl-12'>
 //                 <h2>Tổng tiền thu được theo {this.state.select.label}</h2>
 //                 <p>{this.state.statistical.totalMoney} VNĐ</p>
@@ -103,112 +103,121 @@
 //   }
 // }
 
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 // import "./App.css";
-import BarChart from "../../components/statistical/BarChart";
-import LineChart from "../../components/statistical/LineChart";
-import PieChart from "../../components/statistical/PieChart";
-import { UserData } from "./Data";
+import BarChart from '../../components/statistical/BarChart';
+import LineChart from '../../components/statistical/LineChart';
+import PieChart from '../../components/statistical/PieChart';
+import { UserData } from './Data';
 import { statistical } from '../Order/actions';
-import StatisticalCart from "../../components/statistical/card";
+import StatisticalCart from '../../components/statistical/card';
 function Statistical() {
   const [userData, setUserData] = useState({
-    labels: UserData.map((data) => data.year),
+    labels: UserData.map(data => data.year),
     datasets: [
       {
-        label: "Users Gained",
-        data: UserData.map((data) => data.userGain),
+        label: 'Users Gained',
+        data: UserData.map(data => data.userGain),
         backgroundColor: [
-          "rgba(75,192,192,1)",
-          "#ecf0f1",
-          "#50AF95",
-          "#f3ba2f",
-          "#2a71d0",
+          'rgba(75,192,192,1)',
+          '#ecf0f1',
+          '#50AF95',
+          '#f3ba2f',
+          '#2a71d0'
         ],
-        borderColor: "black",
-        borderWidth: 2,
-      },
-    ],
+        borderColor: 'black',
+        borderWidth: 2
+      }
+    ]
   });
 
   const statisticalRef = useRef({});
   const totalStatisticalRef = useRef({});
   const [statisticals, setStatisticals] = useState([]);
 
-
   useEffect(() => {
-    getListStatistical({status: 2});
+    getListStatistical({ status: 2 });
   }, []);
 
   useEffect(() => {
     const newUserData = {
-      labels: statisticals.map((item) => item),
+      labels: statisticals.map(item => item),
       datasets: [
         {
-          label: "Statistical Order",
-          data: statisticals.map((item) => statisticalRef.current[item]),
+          label: 'Order',
+          data: statisticals.map(item => statisticalRef.current[item]),
           backgroundColor: [
-            "rgba(75,192,192,1)",
-            "#ecf0f1",
-            "#50AF95",
-            "#f3ba2f",
-            "#2a71d0",
+            'rgba(75,192,192,1)',
+            '#ecf0f1',
+            '#50AF95',
+            '#f3ba2f',
+            '#2a71d0'
           ],
-          borderColor: "black",
-          borderWidth: 2,
-        },
-      ],
-    }
+          borderColor: 'black',
+          borderWidth: 2
+        }
+      ]
+    };
     setUserData(newUserData);
-  }, [statisticals])
+  }, [statisticals]);
 
-  const getListStatistical = async (params) => {
+  const getListStatistical = async params => {
     const result = await statistical(params);
     statisticalRef.current = result;
-    const {totalMoney, totalOrder, totalOrderNotProcess, ...rest} = result;
+    const { totalMoney, totalOrder, totalOrderNotProcess, ...rest } = result;
     totalStatisticalRef.current = {
       totalMoney: totalMoney,
       totalOrder: totalOrder,
-      totalOrderNotProcess: totalOrderNotProcess,
-    }
-    
+      totalOrderNotProcess: totalOrderNotProcess
+    };
+
     const newResultArr = Object.keys(rest);
 
-    if(result) setStatisticals(newResultArr);
-  }
+    if (result) setStatisticals(newResultArr);
+  };
 
   // IF YOU SEE THIS COMMENT: I HAVE GOOD EYESIGHT
 
   return (
-    <div className="row">
-
-        <div className="col-xl-12" style={{marginBottom: '15px'}}>
-          <div className="row" style={{justifyContent: 'space-around'}}>
-            <div className="col-xl-3">
-              <StatisticalCart title={'Total order'} value={totalStatisticalRef.current.totalOrder} unit={'Đơn '}/>
-            </div>
-            <div className="col-xl-3">
-            <StatisticalCart title={'Total money'} value={totalStatisticalRef.current.totalMoney} unit={'VND'}/>
-            </div>
-            <div className="col-xl-3">
-            <StatisticalCart title={'Total Order Not Process'} value={totalStatisticalRef.current.totalOrderNotProcess} unit={'Đơn'}/>
-            </div>
+    <div className='row'>
+      <div className='col-xl-12' style={{ marginBottom: '15px' }}>
+        <div className='row' style={{ justifyContent: 'space-around' }}>
+          <div className='col-xl-3'>
+            <StatisticalCart
+              title={'Total order'}
+              value={totalStatisticalRef.current.totalOrder}
+              unit={'Đơn '}
+            />
+          </div>
+          <div className='col-xl-3'>
+            <StatisticalCart
+              title={'Total money'}
+              value={totalStatisticalRef.current.totalMoney}
+              unit={'VND'}
+            />
+          </div>
+          <div className='col-xl-3'>
+            <StatisticalCart
+              title={'Total Order Not Process'}
+              value={totalStatisticalRef.current.totalOrderNotProcess}
+              unit={'Đơn'}
+            />
           </div>
         </div>
-        <div className="col-xl-6">
-          <div style={{ width: 500 }}>
-            <BarChart chartData={userData} />
-          </div>
+      </div>
+      <div className='col-xl-12'>
+        <div style={{ width: '99%' }}>
+          <BarChart chartData={userData} />
         </div>
+      </div>
 
-        <div className="col-xl-6">
-          <div style={{ width: 500 }}>
-            <LineChart chartData={userData} />
-          </div>
+      {/* <div className='col-xl-6'>
+        <div style={{ width: 500 }}>
+          <LineChart chartData={userData} />
         </div>
+      </div> */}
 
-        {/* <div className="col-xl-6">
+      {/* <div className="col-xl-6">
           <div style={{ width: 400 }}>
             <PieChart chartData={userData} />
           </div>

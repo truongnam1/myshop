@@ -131,7 +131,13 @@ router.post('/list', async (req, res) => {
 
     const pageSize = 8;
     const categoryFilter = category ? { category } : {};
-    const priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
+    var priceFilter;
+    if (min && max && max == 501) {
+      console.log(`max`, max);
+      priceFilter = min && max ? { price: { $gte: min } } : {};
+    } else if (min && max) {
+      priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
+    }
     const ratingFilter = rating
       ? { rating: { $gte: rating } }
       : { rating: { $gte: rating } };

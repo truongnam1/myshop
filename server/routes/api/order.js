@@ -409,16 +409,18 @@ router.get('/statistical/test', auth, async (req, res) => {
   }
   var findByMonthTest;
   if (user.role === 'ROLE_MERCHANT') {
-    findByMonthTest = OrderService.getOrderMerchant({ orders, status });
+    findByMonthTest = await OrderService.getOrderMerchant({ orders, status });
   } else if (user.role === 'ROLE_ADMIN') {
-    findByMonthTest = OrderService.getOrderAdmin({ status });
+    findByMonthTest = await OrderService.getOrderAdmin({ status });
   }
+
+  console.log(`findByMonthTest`, findByMonthTest);
 
   let result = {
     // totalOrder: findByMonth.length,
     totalMoney: 0,
     totalOrder: findByMonthTest.length,
-    totalOrderNotProcess: 0,
+    OrderNotProcess: 0,
     totalProductProcessing: 0,
     totalProductShipped: 0,
     totalProductNotProcessing: 0,
@@ -433,8 +435,7 @@ router.get('/statistical/test', auth, async (req, res) => {
   findByMonth.forEach(item => {
     result.totalMoney = result.totalMoney + item._doc.total;
 
-    if (!item.isSuccess)
-      result.totalOrderNotProcess = result.totalOrderNotProcess + 1;
+    if (!item.isSuccess) result.OrderNotProcess = result.OrderNotProcess + 1;
     item._doc.cart.products.forEach(product => {
       if (product.status == 'Processing')
         result.totalProductProcessing = result.totalProductProcessing + 1;
