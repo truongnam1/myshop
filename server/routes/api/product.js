@@ -149,7 +149,7 @@ router.post('/list', async (req, res) => {
       },
       {
         $match: {
-          'brand.isivActe': true
+          'brand.isActive': true
         }
       },
       {
@@ -192,11 +192,39 @@ router.post('/list', async (req, res) => {
       }
     ];
 
+    // let test = await Product.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: 'brands',
+    //       localField: 'brand',
+    //       foreignField: '_id',
+    //       as: 'brands'
+    //     }
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: '$brands',
+    //       preserveNullAndEmptyArrays: true
+    //     }
+    //   },
+    //   {
+    //     $addFields: {
+    //       'brand.name': '$brands.name',
+    //       'brand._id': '$brands._id',
+    //       'brand.isActive': '$brands.isActive'
+    //     }
+    //   },
+
+    // ]);
+    // console.log(`test`, JSON.stringify(test, null, '\t'));
+
     const userDoc = await checkAuth(req);
+    console.log(`userDoc`, userDoc);
     const categoryDoc = await Category.findOne(
       { slug: categoryFilter.category, isActive: true },
       'products -_id'
     );
+    console.log(`categoryDoc`, categoryDoc);
 
     if (categoryDoc && categoryFilter !== category) {
       basicQuery.push({
@@ -274,6 +302,7 @@ router.post('/list', async (req, res) => {
       );
     } else {
       productsCount = await Product.aggregate(basicQuery);
+      console.log(`productsCount`, productsCount);
       const paginateQuery = [
         { $sort: sortOrder },
         { $skip: pageSize * (productsCount.length > 8 ? page - 1 : 0) },
