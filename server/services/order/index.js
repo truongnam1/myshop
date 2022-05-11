@@ -10,7 +10,7 @@ async function totalUserWeek() {
 
     const a = new Date();
     console.log(`asdasdasd`);
-    for (let i = 0; i < 7; ++i) {
+    for (let i = 6; i >= 0; --i) {
 
         let yesterday = new Date(a.getTime());
 
