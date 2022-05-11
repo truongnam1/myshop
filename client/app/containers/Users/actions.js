@@ -35,3 +35,15 @@ export const searchUsers = filter => {
     }
   };
 };
+
+export const getAll = async (params) => {
+  const result = await axios.get('/api/user/all', {params})
+          .then(res => {
+            return res.data;
+          })
+          .catch(error => {
+            return false;
+          });
+  return result;
+
+}

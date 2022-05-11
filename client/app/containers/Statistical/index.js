@@ -187,6 +187,7 @@ function Statistical() {
               title={'Total order'}
               value={totalStatisticalRef.current.totalOrder}
               unit={'Đơn '}
+              src={'https://en.pimg.jp/066/267/763/1/66267763.jpg'}
             />
           </div>
           <div className='col-xl-3'>
@@ -194,6 +195,7 @@ function Statistical() {
               title={'Total money'}
               value={totalStatisticalRef.current.totalMoney}
               unit={'VND'}
+              src={'https://img.freepik.com/free-vector/sack-money-big-pile-cash-money-icon-illustration-money-bag-flat-icon_385450-362.jpg'}
             />
           </div>
           <div className='col-xl-3'>

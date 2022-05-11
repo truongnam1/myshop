@@ -36,7 +36,6 @@ const AddProduct = props => {
     addProduct();
   };
 
-  console.log('formErrors', formErrors['file3d']);
 
   return (
     <div className='add-product'>
@@ -142,7 +141,7 @@ const AddProduct = props => {
           <Col xs='12' md='12'>
             <Input
               type={'file'}
-              error={formErrors['file']}
+              error={formErrors['image']}
               name={'image'}
               label={'file'}
               placeholder={'Please Upload Image'}
